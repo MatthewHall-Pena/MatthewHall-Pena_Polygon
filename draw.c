@@ -127,30 +127,32 @@ void add_box( struct matrix * edges,
 void add_sphere( struct matrix * edges, 
 		 double cx, double cy, double cz,
 		 double r, double step ) {
-  step=.1;
+  step=.01;
   struct matrix *points = generate_sphere(cx, cy, cz, r, step);
   int num_steps = (int)(1/step);
   int index, lat, longt;
   int latStop, longStop, latStart, longStart;
   latStart = 0;
   latStop = num_steps;
-  longStart = 1;
-  longStop = num_steps-1;
+  longStart = 0;
+  longStop = num_steps;
 
   num_steps++;
   for ( lat = latStart; lat < latStop; lat++ ) {
       for ( longt = longStart; longt <= longStop; longt+=1 ) {
 
-	index = lat * (num_steps) + longt-1;
+	index = lat * (num_steps) + longt;
+if((index+1)%num_steps!=0){
 	add_polygon( edges, points->m[0][index],
 		     points->m[1][index],
 		     points->m[2][index],
 		     points->m[0][index+1],
 		     points->m[1][index+1],
 		     points->m[2][index+1],
-		     points->m[0][index+(int)(1/step+.1)],
-		     points->m[1][index+(int)(1/step+.1)],
-		     points->m[2][index+(int)(1/step+.1)]);
+		     points->m[0][index+num_steps],
+		     points->m[1][index+num_steps],
+		     points->m[2][index+num_steps]);
+	}
       }
 
   }  

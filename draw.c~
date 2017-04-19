@@ -139,19 +139,22 @@ void add_sphere( struct matrix * edges,
 
   num_steps++;
   for ( lat = latStart; lat < latStop; lat++ ) {
-    for ( longt = longStart; longt <= longStop; longt+=1 ) {
+      for ( longt = longStart; longt <= longStop; longt+=1 ) {
 
-      index = lat * (num_steps) + longt;
-      add_polygon( edges, points->m[0][index],
-		points->m[1][index],
-		points->m[2][index],
-		points->m[0][index+1],
-		points->m[1][index+1],
-		points->m[2][index+1],
-		points->m[0][index+(int)(1/step+.1)],
-		points->m[1][index+(int)(1/step+.1)],
-		points->m[2][index+(int)(1/step+.1]);
-    }
+	index = lat * (num_steps) + longt;
+if((index+1)%num_steps!=0){
+	add_polygon( edges, points->m[0][index],
+		     points->m[1][index],
+		     points->m[2][index],
+		     points->m[0][index+1],
+		     points->m[1][index+1],
+		     points->m[2][index+1],
+		     points->m[0][index+num_steps],
+		     points->m[1][index+num_steps],
+		     points->m[2][index+num_steps]);
+	}
+      }
+
   }  
   free_matrix(points);
 }
@@ -177,7 +180,7 @@ struct matrix * generate_sphere(double cx, double cy, double cz,
   double x, y, z, rot, circ;
   
   rot_start = 0;
-  rot_stop = num_steps;
+  rot_stop = num_steps+1;
   circ_start = 0;
   circ_stop = num_steps;
   
