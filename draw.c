@@ -54,7 +54,7 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
 
  direction = (((polygons->m[0][point + 1] - polygons->m[0][point])* (polygons->m[1][point + 2] - polygons->m[1][point])) - 
 	   (( polygons->m[1][point + 1] - polygons->m[1][point]) * (polygons->m[0][point + 2] - polygons->m[0][point])));
- if(direction+.01>=0){
+ if(direction>=0){
    draw_line( polygons->m[0][point],
 	      polygons->m[1][point],
 	      polygons->m[0][point+1],
@@ -132,7 +132,7 @@ void add_box( struct matrix * edges,
 void add_sphere( struct matrix * edges, 
 		 double cx, double cy, double cz,
 		 double r, double step ) {
-  step=.1;
+  //step=.1;
   struct matrix *points = generate_sphere(cx, cy, cz, r, step);
   int num_steps = (int)(1/step+.1);
   int index, lat, longt;
@@ -230,7 +230,7 @@ struct matrix * generate_sphere(double cx, double cy, double cz,
 void add_torus( struct matrix * edges, 
 		double cx, double cy, double cz,
 		double r1, double r2, double step ) {
-  step=.1;
+  // step=.1;
   struct matrix *points = generate_torus(cx, cy, cz, r1, r2, step);
   int num_steps = (int)(1/step+.1);
   int index, lat, longt;
