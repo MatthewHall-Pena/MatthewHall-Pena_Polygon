@@ -48,24 +48,29 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
    printf("Need at least 3 points to draw a triangle!\n");
    return;
  }
- 
+ double direction;
  int point;
  for (point=0; point < polygons->lastcol-2; point+=3){
+
+ direction = (((polygons->m[0][point + 1] - polygons->m[0][point])* (polygons->m[1][point + 2] - polygons->m[1][point])) - 
+	   (( polygons->m[1][point + 1] - polygons->m[1][point]) * (polygons->m[0][point + 2] - polygons->m[0][point])));
+ if(direction+.01>=0){
    draw_line( polygons->m[0][point],
 	      polygons->m[1][point],
 	      polygons->m[0][point+1],
 	      polygons->m[1][point+1],
 	      s, c);
-draw_line( polygons->m[0][point],
+   draw_line( polygons->m[0][point],
 	      polygons->m[1][point],
 	      polygons->m[0][point+2],
 	      polygons->m[1][point+2],
 	      s, c);
-draw_line( polygons->m[0][point+1],
+   draw_line( polygons->m[0][point+1],
 	      polygons->m[1][point+1],
 	      polygons->m[0][point+2],
 	      polygons->m[1][point+2],
 	      s, c);
+ }
  }
 }
 
@@ -127,9 +132,9 @@ void add_box( struct matrix * edges,
 void add_sphere( struct matrix * edges, 
 		 double cx, double cy, double cz,
 		 double r, double step ) {
-  step=.01;
+  step=.1;
   struct matrix *points = generate_sphere(cx, cy, cz, r, step);
-  int num_steps = (int)(1/step);
+  int num_steps = (int)(1/step+.1);
   int index, lat, longt;
   int latStop, longStop, latStart, longStart;
   latStart = 0;
@@ -142,17 +147,17 @@ void add_sphere( struct matrix * edges,
       for ( longt = longStart; longt <= longStop; longt+=1 ) {
 
 	index = lat * (num_steps) + longt;
-if((index+1)%num_steps!=0){
-	add_polygon( edges, points->m[0][index],
-		     points->m[1][index],
-		     points->m[2][index],
-		     points->m[0][index+1],
-		     points->m[1][index+1],
-		     points->m[2][index+1],
-		     points->m[0][index+num_steps],
-		     points->m[1][index+num_steps],
-		     points->m[2][index+num_steps]);
-	}
+	if((index+1)%num_steps!=0){
+	  add_polygon( edges, points->m[0][index],
+		       points->m[1][index],
+		       points->m[2][index],
+		       points->m[0][index+1],
+		       points->m[1][index+1],
+		       points->m[2][index+1],
+		       points->m[0][index+num_steps],
+		       points->m[1][index+num_steps],
+		       points->m[2][index+num_steps]);
+	  }
       }
 
   }  
@@ -225,9 +230,9 @@ struct matrix * generate_sphere(double cx, double cy, double cz,
 void add_torus( struct matrix * edges, 
 		double cx, double cy, double cz,
 		double r1, double r2, double step ) {
-  
+  step=.1;
   struct matrix *points = generate_torus(cx, cy, cz, r1, r2, step);
-  int num_steps = (int)(1/step +0.1);
+  int num_steps = (int)(1/step+.1);
   int index, lat, longt;
   int latStop, longStop, latStart, longStart;
   latStart = 0;
@@ -239,12 +244,30 @@ void add_torus( struct matrix * edges,
     for ( longt = longStart; longt < longStop; longt++ ) {
       
       index = lat * (num_steps) + longt;
-      add_edge( edges, points->m[0][index],
-		points->m[1][index],
-		points->m[2][index],
-		points->m[0][index] + 1,
-		points->m[1][index] + 1,
-		points->m[2][index] + 1);
+      if(lat!=latStop-1){
+	add_polygon( edges, points->m[0][index],
+		     points->m[1][index],
+		     points->m[2][index],
+		     points->m[0][index+1],
+		     points->m[1][index+1],
+		     points->m[2][index+1],
+		     points->m[0][index+num_steps],
+		     points->m[1][index+num_steps],
+		     points->m[2][index+num_steps]);
+	}
+      else{
+	if((index+1)%num_steps!=0){
+	  add_polygon( edges, points->m[0][index],
+		       points->m[1][index],
+		       points->m[2][index],
+		       points->m[0][index+1],
+		       points->m[1][index+1],
+		       points->m[2][index+1],
+		       points->m[0][longt],
+		       points->m[1][longt],
+		       points->m[2][longt]);
+	}
+      }
     }
   }  
   free_matrix(points);
